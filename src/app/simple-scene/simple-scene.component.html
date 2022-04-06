@@ -1,0 +1,69 @@
+<canvas #canvas id="canvas"></canvas>
+
+<div id="sidebar">
+
+  <mat-form-field class="fullWidth">
+    <mat-label>Position X</mat-label>
+    <input matInput value="cube.position.x" type="number" [(ngModel)]="cube.position.x"  required step="0.1" placeholder="Placeholder">
+  </mat-form-field>
+
+  <mat-form-field class="fullWidth">
+    <mat-label>Position Y</mat-label>
+    <input matInput value="cube.position.y" type="number" [(ngModel)]="cube.position.y"  required step="0.1" placeholder="Placeholder">
+  </mat-form-field>
+
+  <mat-form-field class="fullWidth">
+    <mat-label>Position Z</mat-label>
+    <input matInput value="cube.position.z" type="number" [(ngModel)]="cube.position.z"  required step="10" placeholder="Placeholder">
+  </mat-form-field>
+
+  <mat-form-field class="fullWidth">
+    <mat-label>Rotation X</mat-label>
+    <input matInput value="cube.rotation.x" type="number" [(ngModel)]="cube.rotation.x"  required step="0.1" placeholder="Placeholder">
+  </mat-form-field>
+
+  <mat-form-field class="fullWidth">
+    <mat-label>Rotation Y</mat-label>
+    <input matInput value="cube.rotation.y" type="number" [(ngModel)]="cube.rotation.y"  required step="0.1" placeholder="Placeholder">
+  </mat-form-field>
+
+  <mat-form-field class="fullWidth">
+    <mat-label>Rotation Z</mat-label>
+    <input matInput value="cube.rotation.z" type="number" [(ngModel)]="cube.rotation.z"  required step="0.1" placeholder="Placeholder">
+  </mat-form-field>
+
+
+    <mat-form-field class="fullWidth">
+      <mat-label>Scale X</mat-label>
+      <input matInput value="cube.scale.x" type="number" [(ngModel)]="cube.scale.x"  required step="0.1" placeholder="Placeholder">
+    </mat-form-field>
+
+    <mat-form-field class="fullWidth">
+      <mat-label>Scale Y</mat-label>
+      <input matInput value="cube.scale.y" type="number" [(ngModel)]="cube.scale.y"  required step="0.1" placeholder="Placeholder">
+    </mat-form-field>
+
+    <mat-form-field class="fullWidth">
+      <mat-label>Scale Z</mat-label>
+      <input matInput value="cube.scale.z" type="number" [(ngModel)]="cube.scale.z"  required step="0.1" placeholder="Placeholder">
+    </mat-form-field>
+
+    <mat-form-field class="fullWidth">
+      <mat-label>Colour</mat-label>
+      <input matInput value="cubeColour" type="color" [(ngModel)]="cubeColour" required (blur)="updateMaterial()" placeholder="Placeholder">
+    </mat-form-field>
+
+    <mat-form-field class="fullWidth">
+      <mat-label>Rotation X speed</mat-label>
+      <input matInput value="rotationSpeedX" type="number" [(ngModel)]="rotationSpeedX" required step="0.01" placeholder="Placeholder">
+    </mat-form-field>
+
+    <mat-form-field class="fullWidth">
+      <mat-label>Rotation Y speed</mat-label>
+      <input matInput value="rotationSpeedX" type="number" [(ngModel)]="rotationSpeedY" required step="0.01" placeholder="Placeholder">
+    </mat-form-field>
+
+    <mat-label>Play animation </mat-label>
+    <mat-checkbox [(ngModel)]="playAnimation"></mat-checkbox>
+
+</div>

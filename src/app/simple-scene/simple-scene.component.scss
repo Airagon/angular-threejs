@@ -1,0 +1,20 @@
+canvas{
+  position: absolute;
+  top:0;
+  left: 0;
+}
+
+#sidebar{
+  position: fixed;
+  padding: 3%;
+  background-color: rgb(73, 73, 73);
+  height: 100%;
+  top: 0%;
+  left: 0%;
+  width: 20%;
+  z-index: 1;
+}
+
+.fullWidth{
+  width: 100%;
+}
