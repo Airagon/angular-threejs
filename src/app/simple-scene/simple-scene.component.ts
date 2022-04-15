@@ -8,6 +8,18 @@ import * as THREE from 'three';
 })
 export class SimpleSceneComponent implements OnInit, AfterViewInit {
 
+  private textureSources:string[] = [
+    '/assets/images/captainamerica.jpg',
+    '/assets/images/flash.jpg',
+    '/assets/images/harleyqueen.jpg',
+    '/assets/images/robin.jpg',
+    '/assets/images/spiderman-ironman.jpg',
+    '/assets/images/superman-batman.jpg',
+    '/assets/images/thor.jpg',
+  ]
+
+  private textureIterator:any;
+
   // Animation properties
   public playAnimation: boolean = false;
   public rotationSpeedX: number = 0.01;
@@ -26,11 +38,13 @@ export class SimpleSceneComponent implements OnInit, AfterViewInit {
     return document.getElementById('canvas');
   }
 
-  // Cube (box geometry)
-  private geometry: THREE.BoxGeometry;
-  private material: THREE.MeshBasicMaterial;
-  public cube: THREE.Mesh;
-  public cubeColour: string;
+
+  // Plane to insert the image
+  private geometryPlane: THREE.PlaneGeometry;
+  private materialPlane: THREE.MeshBasicMaterial;
+  private textureLoader: THREE.TextureLoader;
+  private imagePlane: THREE.Mesh;
+  public materialColour: string;
 
   private renderer!: THREE.WebGLRenderer;
   private scene!: THREE.Scene;
@@ -43,23 +57,51 @@ export class SimpleSceneComponent implements OnInit, AfterViewInit {
   private objects: any = [ ];
 
   constructor() {
-    this.geometry = new THREE.BoxGeometry(1, 1, 1);
-    this.cubeColour = "#4287f5"
-    this.material = new THREE.MeshBasicMaterial({color: this.cubeColour});
-    this.cube = new THREE.Mesh(this.geometry, this.material);
-    this.cube.position.x = 1;
+    // Init image plane
 
+    // Create a texture loader so we can load our image file
+    this.textureLoader = new THREE.TextureLoader();
+    this.materialColour = "#ffffff"
+
+    this.textureIterator = this.textureSources.values();
+
+    var texture = this.textureLoader.load(
+      this.textureIterator.next().value,
+      (texture) => {
+        texture.needsUpdate = true;
+        let aspectRatio = texture.image.height / texture.image.width;
+        this.imagePlane.scale.set(3, 3 * aspectRatio, 3)
+      }
+    );
+
+    // Load an image file into a custom material
+    this.materialPlane = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      map: texture,
+    });
+
+    // create a plane geometry for the image with a width of 10
+    // and a height that preserves the image's aspect ratio
+    this.geometryPlane = new THREE.PlaneGeometry(1, 1);
+
+    // combine our image geometry and material into a mesh
+    this.imagePlane = new THREE.Mesh(this.geometryPlane, this.materialPlane);
+
+    // set the position of the image mesh in the x,y,z dimensions
+    this.imagePlane.position.set(1,0,20)
+
+    // Init raycaster
     this.raycaster = new THREE.Raycaster();
     this.pointer = new THREE.Vector2();
-    this.objects.push(this.cube)
+    this.objects.push(this.imagePlane)
   }
 
   ngOnInit(): void {
     document.addEventListener('mousedown', (event) => this.onMouseDown(event));
     window.addEventListener('resize', () => this.onWindowResize());
 
-    let colorPicker = document.querySelector("#colorPicker") as any;
-    colorPicker.addEventListener("input", (event:any) => this.updateMaterial(event), false);
+    // let colorPicker = document.querySelector("#colorPicker") as any;
+    // colorPicker.addEventListener("input", (event:any) => this.updateMaterial(event), false);
   }
 
   ngAfterViewInit():void {
@@ -71,7 +113,7 @@ export class SimpleSceneComponent implements OnInit, AfterViewInit {
     // Scene
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color("#202020");
-    this.scene.add(this.cube);
+    this.scene.add(this.imagePlane)
 
     // Camera
     let aspectRatio = this.getAspectRatio();
@@ -85,23 +127,23 @@ export class SimpleSceneComponent implements OnInit, AfterViewInit {
     this.camera.position.z = this.cameraZ;
   }
 
-  updateCube(event:any, property:any, axis:any){
+  updateImagePlane(event:any, property:any, axis:any){
     if(property === 'position'){
-      if(axis === 'x') this.cube.position.x = event.value;
-      else if(axis === 'y') this.cube.position.y = event.value;
-      else if(axis === 'z') this.cube.position.z = event.value;
+      if(axis === 'x') this.imagePlane.position.x = event.value;
+      else if(axis === 'y') this.imagePlane.position.y = event.value;
+      else if(axis === 'z') this.imagePlane.position.z = event.value;
     }
 
     if(property === 'rotation'){
-      if(axis === 'x') this.cube.rotation.x = event.value;
-      else if(axis === 'y') this.cube.rotation.y = event.value;
-      else if(axis === 'z') this.cube.rotation.z = event.value;
+      if(axis === 'x') this.imagePlane.rotation.x = event.value;
+      else if(axis === 'y') this.imagePlane.rotation.y = event.value;
+      else if(axis === 'z') this.imagePlane.rotation.z = event.value;
     }
 
     if(property === 'scale'){
-      if(axis === 'x') this.cube.scale.x = event.value;
-      else if(axis === 'y') this.cube.scale.y = event.value;
-      else if(axis === 'z') this.cube.scale.z = event.value;
+      if(axis === 'x') this.imagePlane.scale.x = event.value;
+      else if(axis === 'y') this.imagePlane.scale.y = event.value;
+      else if(axis === 'z') this.imagePlane.scale.z = event.value;
     }
 
     if(property === 'rotation_speed'){
@@ -111,8 +153,8 @@ export class SimpleSceneComponent implements OnInit, AfterViewInit {
   }
 
   public updateMaterial(event:any){
-    this.cubeColour = event.target.value;
-    this.cube.material = new THREE.MeshBasicMaterial({color: this.cubeColour});
+    this.materialColour = event.target.value;
+    this.imagePlane.material = new THREE.MeshBasicMaterial({color: this.materialColour});
   }
 
   private getAspectRatio(){
@@ -121,8 +163,8 @@ export class SimpleSceneComponent implements OnInit, AfterViewInit {
 
   private animateCube() {
     if(this.playAnimation){
-      this.cube.rotation.x += this.rotationSpeedX;
-      this.cube.rotation.y += this.rotationSpeedY;
+      this.imagePlane.rotation.x += this.rotationSpeedX;
+      this.imagePlane.rotation.y += this.rotationSpeedY;
     }
   }
 
@@ -153,12 +195,24 @@ export class SimpleSceneComponent implements OnInit, AfterViewInit {
     //checks object array for any intersecting objects
     const intersects = this.raycaster.intersectObjects(this.objects);
 
-    // if the array is more than zero, get the first (intersects[0]) intersected object
-    // and change the object material color to a random color
     if(intersects.length > 0){
-      this.cubeColour = `#${Math.floor(Math.random() * 0xffffff).toString(16)}`;
-      this.cubeColour = (this.cubeColour.length != 7) ? this.cubeColour + '0' : this.cubeColour;
-      (intersects[0].object as THREE.Mesh).material = new THREE.MeshBasicMaterial({color: this.cubeColour});
+
+      var nextTexture = this.textureIterator.next().value;
+
+      if(!nextTexture){
+        this.textureIterator = this.textureSources.values();
+        nextTexture = this.textureIterator.next().value;
+      }
+
+      var texture = this.textureLoader.load(
+        nextTexture,
+        (texture) => {
+          let aspectRatio = texture.image.height / texture.image.width;
+          (intersects[0].object as THREE.Mesh).scale.set(3, 3 * aspectRatio, 3);
+          ((intersects[0].object as THREE.Mesh).material as THREE.MeshBasicMaterial).map = texture;
+          texture.needsUpdate = true;
+        }
+      );
     }
   }
 
